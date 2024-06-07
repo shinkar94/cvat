@@ -265,59 +265,6 @@ function prepareData(details) {
     return data;
 }
 
-class WorkerWrappedAxios {
-    constructor() {
-        const worker = new Worker(new URL('./download.worker', import.meta.url));
-        const requests = {};
-        let requestId = 0;
-
-        worker.onmessage = (e) => {
-            if (e.data.id in requests) {
-                try {
-                    if (e.data.isSuccess) {
-                        requests[e.data.id].resolve({ data: e.data.responseData, headers: e.data.headers });
-                    } else {
-                        requests[e.data.id].reject(new AxiosError(e.data.message, e.data.code));
-                    }
-                } finally {
-                    delete requests[e.data.id];
-                }
-            }
-        };
-
-        worker.onerror = () => {
-            throw new Error('Unexpected download worker error');
-        };
-
-        function getRequestId(): number {
-            return requestId++;
-        }
-
-        async function get(url: string, requestConfig) {
-            return new Promise((resolve, reject) => {
-                const newRequestId = getRequestId();
-                requests[newRequestId] = { resolve, reject };
-                worker.postMessage({
-                    url,
-                    config: requestConfig,
-                    id: newRequestId,
-                });
-            });
-        }
-
-        Object.defineProperties(
-            this,
-            Object.freeze({
-                get: {
-                    value: get,
-                    writable: false,
-                },
-            }),
-        );
-    }
-}
-
-const workerAxios = new WorkerWrappedAxios();
 Axios.interceptors.request.use((reqConfig) => {
     if ('params' in reqConfig && 'org' in reqConfig.params) {
         return reqConfig;
@@ -1631,7 +1578,7 @@ async function getData(jid: number, chunk: number, quality: ChunkQuality, retry 
     const { backendAPI } = config;
 
     try {
-        const response = await (workerAxios as any).get(`${backendAPI}/jobs/${jid}/data`, {
+        const response = await Axios.get(`${backendAPI}/jobs/${jid}/data`, {
             params: {
                 ...enableOrganization(),
                 quality,
