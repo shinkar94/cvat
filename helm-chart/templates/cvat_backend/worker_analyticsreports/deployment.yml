@@ -61,6 +61,19 @@ spec:
           {{- toYaml . | nindent 10 }}
           {{- end }}
           {{- with concat .Values.cvat.backend.additionalVolumeMounts $localValues.additionalVolumeMounts }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/true
+            periodSeconds: 15
+            initialDelaySeconds: 15
+          livenessProbe:
+            exec:
+              command:
+              - /bin/true
+            periodSeconds: 15
+            failureThreshold: 10
+            initialDelaySeconds: 60
           volumeMounts:
           {{- toYaml . | nindent 10 }}
           {{- end }}

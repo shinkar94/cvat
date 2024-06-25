@@ -40,6 +40,12 @@ spec:
           {{- end }}
           ports:
           - containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+          livenessProbe:
+            tcpSocket:
+              port: 80
           {{- with .Values.cvat.frontend.additionalEnv }}
           env:
           {{- toYaml . | nindent 10 }}

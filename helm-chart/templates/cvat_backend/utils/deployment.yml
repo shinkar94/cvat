@@ -60,6 +60,19 @@ spec:
           {{- with concat .Values.cvat.backend.additionalEnv $localValues.additionalEnv }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/true
+            periodSeconds: 15
+            initialDelaySeconds: 15
+          livenessProbe:
+            exec:
+              command:
+              - /bin/true
+            periodSeconds: 15
+            failureThreshold: 10
+            initialDelaySeconds: 60
           ports:
           - containerPort: 8080
           volumeMounts:
