@@ -85,7 +85,7 @@ context('Single object annotation mode', { scrollBehavior: false }, () => {
             },
         });
         cy.get('.cvat-canvas-container').should('not.exist');
-        cy.get('.cvat-canvas-container').should('exist').and('be.visible');
+        cy.get('.cvat-canvas-container').should('exist').and('be.visible').trigger('mouseover');
     }
 
     function drawObject(creatorFunction) {
