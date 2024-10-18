@@ -55,9 +55,6 @@ context('Base actions on the project', () => {
     }
 
     before(() => {
-        cy.goToTaskList();
-        cy.contains('strong', taskName.firstTask).should('not.exist');
-        cy.contains('strong', taskName.secondTask).should('not.exist');
         cy.openProject(projectName);
     });
 
@@ -150,6 +147,7 @@ context('Base actions on the project', () => {
             cy.login();
             cy.goToProjectsList();
             cy.deleteProject(projectName, projectID);
+            cy.openProject(projectName);
             cy.goToTaskList();
             cy.contains('strong', taskName.firstTask).should('not.exist');
             cy.contains('strong', taskName.secondTask).should('not.exist');
